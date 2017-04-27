@@ -1,5 +1,4 @@
 # windows-network-drive
-=========
 
 Allows a user to do network drive stuff on Microsoft Windows from node js
 
@@ -9,69 +8,89 @@ Allows a user to do network drive stuff on Microsoft Windows from node js
 
 ## Usage
 
-	All examples assume:
-	 	let networkDrive = require('windows-network-drive');
+All examples assume:
+
+	let networkDrive = require('windows-network-drive');
 
 ### find
-	 find(drivePath: string): Promise<string | undefined>
+
+find(drivePath: string): Promise<string | undefined>
 
 #### Examples
-	 networkDrive.find("\\DoesExist\Path")
-	 .then(function (driveLetter)
-	 {
-		 // driveLetter === "Z"
-	 });
 
-	 networkDrive.find("\\\\DoesNOTExist\Path")
-	 .then(function (driveLetter)
-	 {
-		 // driveLetter === undefined
-	 });
+```javascript
+ networkDrive.find("\\DoesExist\Path")
+ .then(function (driveLetter)
+ {
+	 // driveLetter === "Z"
+ });
 
+ networkDrive.find("\\\\DoesNOTExist\Path")
+ .then(function (driveLetter)
+ {
+	 // driveLetter === undefined
+ });
+```
 ### list
-	 list(void): Promise<Object>
+
+list(void): Promise<Object>
 
 #### Examples
-	 networkDrive.list()
-	 .then(function (drives)
-	 {
-		 /*
-			drives = {
-	 			"F":"\\DoesExist\Path\Files",
-	 			"K":"\\NETWORKB\\DRIVE C"
-	 		}
-	 	*/
-	 });
+
+```javascript
+ networkDrive.list()
+ .then(function (drives)
+ {
+	 /*
+		drives = {
+			"F":"\\DoesExist\Path\Files",
+			"K":"\\NETWORKB\\DRIVE C"
+		}
+	*/
+ });
+ ```
 
 ### mount
-	mount(drivePath: string, driveLetter?: string, username?: string, password?: string): Promise<string>
+
+mount(drivePath: string, driveLetter?: string, username?: string, password?: string): Promise<string>
 
 #### Examples
-	 networkDrive.mount("\\\\DoesExist\\Path\\Files", "F", undefined, undefined)
-	 .then(function (driveLetter)
-	 {
-		 // driveLetter = "F"
-	 });
+
+```javascript
+ networkDrive.mount("\\\\DoesExist\\Path\\Files", "F", undefined, undefined)
+ .then(function (driveLetter)
+ {
+	 // driveLetter = "F"
+ });
+```
 
 ### unmount
-	unmount(driveLetter: string): Promise<void>
+
+unmount(driveLetter: string): Promise<void>
 
 #### Examples
-	 networkDrive.unmount("F")
-	 .then(function ()
-	 {
-		 // done
-	 });
+
+```javascript
+ networkDrive.unmount("F")
+ .then(function ()
+ {
+	 // done
+ });
+ ```
 
 ### pathToWindowsPath
-	pathToWindowsPath(drivePath: string): Promise<string>
+
+pathToWindowsPath(drivePath: string): Promise<string>
 
 #### Examples
-	 networkDrive.pathToWindowsPath(//DoesExist/Path/Files)
-	 .then(function (windowsPath)
-	 {
-		 // windowsPath = \\DoesExist\Path\Files
-	 });
+
+```javascript
+ networkDrive.pathToWindowsPath(//DoesExist/Path/Files)
+ .then(function (windowsPath)
+ {
+	 // windowsPath = \\DoesExist\Path\Files
+ });
+ ```
 
 ## Tests
 
