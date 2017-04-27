@@ -4,13 +4,17 @@ Allows a user to do network drive stuff on Microsoft Windows from node js
 
 ## Installation
 
-  `npm install windows-network-drive`
+```
+npm install windows-network-drive
+```
 
 ## Usage
 
 All examples assume:
 
-	let networkDrive = require('windows-network-drive');
+```javascript
+let networkDrive = require('windows-network-drive');
+```
 
 ### find
 
@@ -94,7 +98,9 @@ pathToWindowsPath(drivePath: string): Promise<string>
 
 ## Tests
 
-  `npm test`
+```
+npm test
+```
 
 ## Contributing
 
