@@ -1,0 +1,21 @@
+{
+  "name": "windows-network-drive",
+  "version": "1.0.0",
+  "description": "windows network drive stuff",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Larry Bahr",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^3.3.0"
+  },
+  "dependencies": {
+    "child-process-promise": "^2.2.1",
+    "windows-drive-letters": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=4.2.4"
+  }
+}

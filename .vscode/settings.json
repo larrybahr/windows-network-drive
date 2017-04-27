@@ -1,0 +1,33 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+	"editor.formatOnSave": false,
+	"editor.tabSize": 3,
+	"editor.insertSpaces": false,
+	"editor.rulers": [
+		120
+	],
+	"files.exclude": {
+		"**/.git": true,
+		"**/.DS_Store": true,
+		"**/.svn": true,
+		"**/*.sln": true,
+		"**/*.vcproj*": true,
+		"**/*.ncb": true,
+		"**/*.pfi": true,
+		"**/*.suo": true,
+		"node_modules/":true
+	},
+	"files.eol": "\n",
+	"files.trimTrailingWhitespace": true,
+	"html.format.enable": false,
+	"html.format.endWithNewline": true,
+	"html.format.wrapLineLength": 0,
+	"javascript.format.enable": true,
+	"javascript.format.placeOpenBraceOnNewLineForFunctions": true,
+	"javascript.format.placeOpenBraceOnNewLineForControlBlocks": true,
+	"json.format.enable": true,
+	"typescript.format.enable": true,
+	"typescript.format.placeOpenBraceOnNewLineForFunctions": true,
+	"typescript.format.placeOpenBraceOnNewLineForControlBlocks": true,
+	"vsicons.presets.angular": false
+}
