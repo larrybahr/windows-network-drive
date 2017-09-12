@@ -1,10 +1,32 @@
 {
   "name": "windows-network-drive",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "windows network drive stuff",
+  "license": "MIT",
   "homepage": "https://github.com/larrybahr/windows-network-drive",
-  "repository": "larrybahr/windows-network-drive",
+  "author": {
+    "name": "Larry Bahr",
+    "url": "http://www.LB3Tech.net/"
+  },
+  "contributors": [
+    {
+      "name": "jayemdee",
+      "url": "https://github.com/jayemdee"
+    }
+  ],
+  "devDependencies": {
+    "mocha": "^3.5.3"
+  },
+  "dependencies": {
+    "child-process-promise": "^2.2.1",
+    "windows-drive-letters": "^3.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/larrybahr/windows-network-drive.git"
+  },
   "keywords": [
+    "microsoft",
     "windows",
     "drive",
     "network",
@@ -14,18 +36,6 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha"
-  },
-  "author": {
-    "name": "Larry Bahr",
-    "url": "http://www.LB3Tech.net/"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "mocha": "^3.3.0"
-  },
-  "dependencies": {
-    "child-process-promise": "^2.2.1",
-    "windows-drive-letters": "^3.1.0"
   },
   "engines": {
     "node": ">=4.2.4"

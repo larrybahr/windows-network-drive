@@ -4,11 +4,18 @@ Allows a user to do network drive stuff on Microsoft Windows from node js
 
 ## Installation
 
+```bash
+$ npm install windows-network-drive
 ```
-npm install windows-network-drive
-```
+## Features
 
-## Usage
+* Mount a network drive that will persist after reboot
+* Unmount a network drive
+* Get a list of all network drives
+* Find if a path is already mounted and get the drive letter
+* Convert Unix paths to Windows friendly paths
+
+## Methods
 
 All examples assume:
 
@@ -18,7 +25,9 @@ let networkDrive = require('windows-network-drive');
 
 ### find
 
-find(drivePath: string): Promise<string | undefined>
+```typescript
+find(drivePath: string): Promise<string[]>
+```
 
 #### Examples
 
@@ -26,22 +35,26 @@ find(drivePath: string): Promise<string | undefined>
  networkDrive.find("\\DoesExist\Path")
  .then(function (driveLetter)
  {
-	 // driveLetter === "Z"
+	 // driveLetter === ["Z"]
  });
 
  networkDrive.find("\\\\DoesNOTExist\Path")
  .then(function (driveLetter)
  {
-	 // driveLetter === undefined
+	 // driveLetter === []
  });
 ```
+
 ### list
 
-list(void): Promise<Object>
+```typescript
+list(void): Promise<object>
+```
 
 #### Examples
 
 ```javascript
+ // With network drives
  networkDrive.list()
  .then(function (drives)
  {
@@ -52,11 +65,20 @@ list(void): Promise<Object>
 		}
 	*/
  });
- ```
+ 
+ // No network drives
+ networkDrive.list()
+ .then(function (drives)
+ {
+	 // drives = {}
+ });
+```
 
 ### mount
 
+```typescript
 mount(drivePath: string, driveLetter?: string, username?: string, password?: string): Promise<string>
+```
 
 #### Examples
 
@@ -70,7 +92,9 @@ mount(drivePath: string, driveLetter?: string, username?: string, password?: str
 
 ### unmount
 
+```typescript
 unmount(driveLetter: string): Promise<void>
+```
 
 #### Examples
 
@@ -80,11 +104,13 @@ unmount(driveLetter: string): Promise<void>
  {
 	 // done
  });
- ```
+```
 
 ### pathToWindowsPath
 
+```typescript
 pathToWindowsPath(drivePath: string): Promise<string>
+```
 
 #### Examples
 
@@ -94,14 +120,25 @@ pathToWindowsPath(drivePath: string): Promise<string>
  {
 	 // windowsPath = \\DoesExist\Path\Files
  });
- ```
+```
 
 ## Tests
 
-```
-npm test
+  To run the test suite, first install the dependencies, then run `npm test`:
+
+```bash
+$ npm install
+$ npm test
 ```
 
 ## Contributing
 
 In lieu of a formal style guide, take care to maintain the existing coding style. Format code with VS Code. Add unit tests for any new or changed functionality. Lint and test your code.
+
+## People
+
+Author and list of all contributors can be found in [package.json](package.json)
+
+## License
+
+  [MIT](LICENSE)

@@ -9,16 +9,16 @@ let windowsNetworkDrive = {
 	 * @function find
 	 * @public
 	 * @param {string} drivePath - Drive path to search for
-	 * @returns {Promise<string | undefined>} - The drive letter if the path is mounted, else undefined
+	 * @returns {Promise<string[]>} - An array of drive letters that point to the drive path
 	 * @description Gets the network drive letter for a path
 	 * @example
 	 * networkDrive.find("\\DoesExist\Path")
 	 * // returns
-	 * "T"
+	 * ["T"]
 	 * @example
 	 * networkDrive.find("\\DoesNOTExist\Path")
 	 * // returns
-	 * undefined
+	 * []
 	 */
 	find: function find(drivePath)
 	{
@@ -58,7 +58,7 @@ let windowsNetworkDrive = {
 			.then(windowsNetworkDrive.list)
 			.then(function (networkDrives)
 			{
-				let driveLetter = undefined;
+				let driveLetters = [];
 
 				if ("string" !== typeof drivePath ||
 					0 === drivePath.length)
@@ -81,10 +81,10 @@ let windowsNetworkDrive = {
 
 					if (currentDrivePath === drivePath)
 					{
-						driveLetter = currentDriveLetter.toUpperCase();
+						driveLetters.push(currentDriveLetter.toUpperCase());
 					}
 				}
-				return driveLetter;
+				return driveLetters;
 			})
 		return findPromise;
 	},
@@ -390,9 +390,15 @@ let windowsNetworkDrive = {
 			 */
 			.then(function ()
 			{
-				if ("string" !== typeof drivePath || 0 === drivePath.length)
+				if ("string" !== typeof drivePath)
 				{
 					throw (new Error('Drive path is not valid. drive path = ' + JSON.stringify(drivePath)));
+				}
+
+				drivePath = drivePath.trim();
+				if (0 === drivePath.length)
+				{
+					throw (new Error('Drive path is not valid. drive path is only whitespace. drive path = ' + JSON.stringify(drivePath)));
 				}
 				return;
 			})
@@ -400,7 +406,12 @@ let windowsNetworkDrive = {
 			.then(function ()
 			{
 				drivePath = path.normalize(drivePath);
-				drivePath.replace('/', '\\');
+				drivePath = drivePath.replace('/', '\\');
+
+				/**
+				 * Remove the trailing \ because it breaks the net use command
+				 */
+				drivePath = drivePath.replace(/\\+$/, '');
 				return drivePath;
 			});
 		return pathPromise;
