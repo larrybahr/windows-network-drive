@@ -300,7 +300,7 @@ let windowsNetworkDrive = {
 	 * @public
 	 * @param {string} driveLetter - Drive letter to remove
 	 * @returns {Promise<void>}
-	 * @description Creates a network drive
+	 * @description Removes a network drive
 	 * @example
 	 * networkDrive.unmount("F")
 	 */

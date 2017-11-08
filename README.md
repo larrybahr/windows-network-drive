@@ -24,7 +24,7 @@ let networkDrive = require('windows-network-drive');
 ```
 
 ### find
-
+Finds if a path is already mounted and returns all drive letters that point to that exact path.
 ```typescript
 find(drivePath: string): Promise<string[]>
 ```
@@ -32,13 +32,19 @@ find(drivePath: string): Promise<string[]>
 #### Examples
 
 ```javascript
- networkDrive.find("\\DoesExist\Path")
+ networkDrive.find("\\\\DoesExist\\Path")
  .then(function (driveLetter)
  {
 	 // driveLetter === ["Z"]
  });
 
- networkDrive.find("\\\\DoesNOTExist\Path")
+  networkDrive.find("\\\\DoesExist\\Path\\ThisFolderIsNotPartOfTheMountPath")
+ .then(function (driveLetter)
+ {
+	 // driveLetter === []
+ });
+
+ networkDrive.find("\\\\DoesNOTExist\\Path")
  .then(function (driveLetter)
  {
 	 // driveLetter === []
@@ -46,7 +52,7 @@ find(drivePath: string): Promise<string[]>
 ```
 
 ### list
-
+List all network drives and their paths.
 ```typescript
 list(void): Promise<object>
 ```
@@ -60,12 +66,12 @@ list(void): Promise<object>
  {
 	 /*
 		drives = {
-			"F":"\\DoesExist\Path\Files",
-			"K":"\\NETWORKB\\DRIVE C"
+			"F":"\\\\DoesExist\\Path\\Files",
+			"K":"\\\\NETWORKB\\DRIVE C"
 		}
 	*/
  });
- 
+
  // No network drives
  networkDrive.list()
  .then(function (drives)
@@ -75,7 +81,7 @@ list(void): Promise<object>
 ```
 
 ### mount
-
+Mounts a network drive path and returns the new drive letter.
 ```typescript
 mount(drivePath: string, driveLetter?: string, username?: string, password?: string): Promise<string>
 ```
@@ -91,7 +97,7 @@ mount(drivePath: string, driveLetter?: string, username?: string, password?: str
 ```
 
 ### unmount
-
+Unmounts a network drive.
 ```typescript
 unmount(driveLetter: string): Promise<void>
 ```
@@ -107,7 +113,9 @@ unmount(driveLetter: string): Promise<void>
 ```
 
 ### pathToWindowsPath
+Converts a valid file system path to a Windows friendly path.
 
+NOTE: All methods can take in a non Windows friendly path. This is exported for user convenience.
 ```typescript
 pathToWindowsPath(drivePath: string): Promise<string>
 ```
@@ -118,7 +126,7 @@ pathToWindowsPath(drivePath: string): Promise<string>
  networkDrive.pathToWindowsPath(//DoesExist/Path/Files)
  .then(function (windowsPath)
  {
-	 // windowsPath = \\DoesExist\Path\Files
+	 // windowsPath = \\\\DoesExist\\Path\\Files
  });
 ```
 
