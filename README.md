@@ -130,6 +130,10 @@ pathToWindowsPath(drivePath: string): Promise<string>
  });
 ```
 
+## More Examples
+
+For more examples, check out the [example](https://github.com/larrybahr/windows-network-drive/tree/master/example) folder in the GitHub repo!
+
 ## Tests
 
   To run the test suite, first install the dependencies, then run `npm test`:
