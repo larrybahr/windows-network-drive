@@ -1,0 +1,15 @@
+{
+  "name": "write-a-file-to-a-network-drive",
+  "version": "1.0.0",
+  "description": "Mounts a network drive and writes a file to it",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Larry Bahr",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^5.0.0",
+    "windows-network-drive": "^2.0.1"
+  }
+}
