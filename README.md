@@ -130,6 +130,22 @@ pathToWindowsPath(drivePath: string): Promise<string>
  });
 ```
 
+### isWinOs
+Test the current OS is Windows.
+
+```typescript
+isWinOs(void): boolean
+```
+
+#### Examples
+
+```javascript
+ if (true ===networkDrive.isWinOs())
+ {
+	 console.log("This is running on Windows");
+ }
+```
+
 ## More Examples
 
 For more examples, check out the [example](https://github.com/larrybahr/windows-network-drive/tree/master/example) folder in the GitHub repo!

@@ -2,7 +2,6 @@
 const exec = require('child-process-promise').exec;
 const path = require('path');
 const MAX_BUFFER_SIZE = 2000 * 1024;
-const IS_WIN = /^win/.test(process.platform);
 
 let windowsNetworkDrive = {
 	/**
@@ -27,7 +26,7 @@ let windowsNetworkDrive = {
 		findPromise = Promise.resolve()
 			.then(function ()
 			{
-				if (false === IS_WIN)
+				if (false === windowsNetworkDrive.isWinOs())
 				{
 					throw (new Error('windows-network-drive can only run on windows.'));
 				}
@@ -38,7 +37,8 @@ let windowsNetworkDrive = {
 			 */
 			.then(function ()
 			{
-				if ("string" !== typeof drivePath || 0 === drivePath.length)
+				if ("string" !== typeof drivePath ||
+					0 === drivePath.trim().length)
 				{
 					throw (new Error('Drive path is not valid. drive path = ' + JSON.stringify(drivePath)));
 				}
@@ -60,12 +60,6 @@ let windowsNetworkDrive = {
 			{
 				let driveLetters = [];
 
-				if ("string" !== typeof drivePath ||
-					0 === drivePath.length)
-				{
-					throw (new Error("NetworkDriveGet - Invalid path"));
-				}
-
 				/**
 				 * Create the list of drives to path
 				 */
@@ -73,6 +67,10 @@ let windowsNetworkDrive = {
 				{
 					let currentDrivePath;
 
+					/**
+					 * There is not an easy way to test this
+					 */
+					/* istanbul ignore if */
 					if (!networkDrives.hasOwnProperty(currentDriveLetter))
 					{
 						continue;
@@ -87,6 +85,22 @@ let windowsNetworkDrive = {
 				return driveLetters;
 			})
 		return findPromise;
+	},
+
+	/**
+	 * @function isWinOs
+	 * @public
+	 * @returns {boolean} - True if is a Windows OS
+	 * @description Test the current OS is Windows. This was split into a function for code testing
+	 * @example
+	 * if (true ===networkDrive.isWinOs())
+	 * {
+	 *     console.log("This is running on Windows");
+	 * }
+	 */
+	isWinOs: function isWinOs()
+	{
+		return /^win/.test(process.platform);
 	},
 
 	/**
@@ -109,7 +123,7 @@ let windowsNetworkDrive = {
 		listPromise = Promise.resolve()
 			.then(function ()
 			{
-				if (false === IS_WIN)
+				if (false === windowsNetworkDrive.isWinOs())
 				{
 					throw (new Error('windows-network-drive can only run on windows.'));
 				}
@@ -124,6 +138,10 @@ let windowsNetworkDrive = {
 				let drivePaths = {};
 				let currentPathIndex;
 
+				/**
+				 * Ignore this in code coverage because it should never happen
+				 */
+				/* istanbul ignore if */
 				if ("string" === typeof result.stderr &&
 					0 !== result.stderr.length)
 				{
@@ -182,7 +200,7 @@ let windowsNetworkDrive = {
 		mountPromise = Promise.resolve()
 			.then(function ()
 			{
-				if (false === IS_WIN)
+				if (false === windowsNetworkDrive.isWinOs())
 				{
 					throw (new Error('windows-network-drive can only run on windows.'));
 				}
@@ -193,11 +211,17 @@ let windowsNetworkDrive = {
 			 */
 			.then(function ()
 			{
-				if ("string" !== typeof drivePath || 0 === drivePath.length)
+
+				if ("string" !== typeof drivePath || 0 === drivePath.trim().length)
 				{
 					throw (new Error('Drive path is not valid. drive path = ' + JSON.stringify(drivePath)));
 				}
+				drivePath = drivePath.trim();
 
+				if ("string" === typeof driveLetter)
+				{
+					driveLetter = driveLetter.trim();
+				}
 				if ("string" !== typeof driveLetter && undefined !== driveLetter)
 				{
 					throw (new Error('Drive letter must be a string or undefined'));
@@ -260,10 +284,12 @@ let windowsNetworkDrive = {
 			{
 				mountCommand += " " + driveLetter + ": \"" + drivePath + "\" /P:Yes";
 
+				/**
+				 * There is not an easy way to setup a network drive with a username and password
+				 */
+				/* istanbul ignore next */
 				if ("string" === typeof username &&
-					0 !== username.length &&
-					"string" === typeof password &&
-					0 !== password.length)
+					"string" === typeof password)
 				{
 					mountCommand += " /user:" + username + " " + password;
 				}
@@ -278,6 +304,10 @@ let windowsNetworkDrive = {
 			})
 			.then(function (result)
 			{
+				/**
+				 * Ignore this in code coverage because it should never happen
+				 */
+				/* istanbul ignore if */
 				if ("string" === typeof result.stderr &&
 					0 !== result.stderr.length)
 				{
@@ -308,15 +338,11 @@ let windowsNetworkDrive = {
 	{
 		let driveLetters = require("windows-drive-letters");
 		let unmountPromise;
-		let unmountCommand;
-
-		driveLetter = driveLetter.toUpperCase();
-		unmountCommand = "net use " + driveLetter + ": /Delete /y";
 
 		unmountPromise = Promise.resolve()
 			.then(function ()
 			{
-				if (false === IS_WIN)
+				if (false === windowsNetworkDrive.isWinOs())
 				{
 					throw (new Error('windows-network-drive can only run on windows.'));
 				}
@@ -327,10 +353,11 @@ let windowsNetworkDrive = {
 			 */
 			.then(function ()
 			{
-				if ("string" !== typeof driveLetter || 0 === driveLetter.length)
+				if ("string" !== typeof driveLetter || 0 === driveLetter.trim().length)
 				{
 					throw (new Error('Drive letter is not valid'));
 				}
+				driveLetter = driveLetter.trim().toUpperCase();
 				return;
 			})
 
@@ -345,9 +372,15 @@ let windowsNetworkDrive = {
 				 */
 				if (-1 !== driveLetters.indexOf(driveLetter))
 				{
+					let unmountCommand = "net use " + driveLetter + ": /Delete /y";
+
 					return exec(unmountCommand, { maxBuffer: MAX_BUFFER_SIZE })
 						.then(function (result)
 						{
+							/**
+							 * Ignore this in code coverage because it should never happen
+							 */
+							/* istanbul ignore if */
 							if ("string" === typeof result.stderr &&
 								0 !== result.stderr.length)
 							{
@@ -355,6 +388,10 @@ let windowsNetworkDrive = {
 							}
 						});
 				}
+				/**
+				 * Ignore false possitive
+				 */
+				/* istanbul ignore next */
 				return;
 			})
 		return unmountPromise;
@@ -378,7 +415,7 @@ let windowsNetworkDrive = {
 		pathPromise = Promise.resolve()
 			.then(function ()
 			{
-				if (false === IS_WIN)
+				if (false === windowsNetworkDrive.isWinOs())
 				{
 					throw (new Error('windows-network-drive can only run on windows.'));
 				}
@@ -423,3 +460,4 @@ exports.pathToWindowsPath = windowsNetworkDrive.pathToWindowsPath;
 exports.mount = windowsNetworkDrive.mount;
 exports.find = windowsNetworkDrive.find;
 exports.unmount = windowsNetworkDrive.unmount;
+exports.isWinOs = windowsNetworkDrive.isWinOs;

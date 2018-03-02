@@ -5,6 +5,51 @@ const VALID_MOUNT_PATH = "\\\\localhost\\c$"; /** This network path should work 
 
 describe('windows-network-drive', function ()
 {
+	describe('isWinOs()', function ()
+	{
+		it('should work on a Windows OS', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					if (true !== networkDrive.isWinOs())
+					{
+						throw (new Error("Windows OS failed!"));
+					}
+					return;
+				});
+		});
+
+		it('should not work on a non Windows OS', function ()
+		{
+			var originalPlatform = process.platform;
+
+			return Promise.resolve()
+				.then(function ()
+				{
+					/**
+					 * Fake the OS so this test can fail
+					 * https://stackoverflow.com/a/30405547/6194193
+					 */
+					Object.defineProperty(process, 'platform', {
+						value: 'MockOS'
+					});
+					if (false !== networkDrive.isWinOs())
+					{
+						throw (new Error("Non Windows OS passed!"));
+					}
+
+					/**
+					 * Set the OS back to the original value so the other tests pass
+					 */
+					Object.defineProperty(process, 'platform', {
+						value: originalPlatform
+					});
+					return;
+				});
+		});
+	});
+
 	describe('pathToWindowsPath()', function ()
 	{
 		it('should get a converted path', function ()
@@ -23,6 +68,88 @@ describe('windows-network-drive', function ()
 					return;
 				});
 		});
+
+		it('should not work on a non Windows OS', function ()
+		{
+			var originalPlatform = process.platform;
+
+			return Promise.resolve()
+				.then(function ()
+				{
+					/**
+					 * Fake the OS so this test can fail
+					 * https://stackoverflow.com/a/30405547/6194193
+					 */
+					Object.defineProperty(process, 'platform', {
+						value: 'MockOS'
+					});
+					return networkDrive.pathToWindowsPath(VALID_MOUNT_PATH.replace('\\', '/'));
+				})
+				.then(function (result)
+				{
+					/**
+					 * The OS will be set back in the catch
+					 */
+					throw (new Error("Non Windows OS passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					/**
+					 * Set the OS back to the original value so the other tests pass
+					 */
+					Object.defineProperty(process, 'platform', {
+						value: originalPlatform
+					});
+
+					if (false == err.message.startsWith("windows-network-drive can only run on windows."))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				})
+		});
+
+		it('should not allow paths that are only white space', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					return networkDrive.pathToWindowsPath(" \t\n\r");
+				})
+				.then(function (result)
+				{
+					throw (new Error("Only white space passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					if (false == err.message.startsWith("Drive path is not valid. drive path is only whitespace."))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				});
+		});
+
+		it('should not allow invalid paths', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					return networkDrive.pathToWindowsPath(1);
+				})
+				.then(function (result)
+				{
+					throw (new Error("Invalid path passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					if (false == err.message.startsWith("Drive path is not valid."))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				});
+		});
 	});
 
 	describe('mount() and unmount()', function ()
@@ -37,6 +164,30 @@ describe('windows-network-drive', function ()
 				.then(function (driveLetter)
 				{
 					return networkDrive.unmount(driveLetter);
+				});
+		});
+
+		it('should mount and unmount a drive (all parameters specified as empty strings)', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					return networkDrive.mount(VALID_MOUNT_PATH, "", "", "");
+				})
+				.then(function (driveLetter)
+				{
+					return networkDrive.unmount(driveLetter);
+				});
+		});
+
+		it('should unmount a drive if it was never actually mounted', function ()
+		{
+			return Promise.resolve()
+				.then(function (driveLetter)
+				{
+					let driveLetters = require("windows-drive-letters");
+
+					return networkDrive.unmount(driveLetters.randomLetterSync());
 				});
 		});
 
@@ -76,6 +227,233 @@ describe('windows-network-drive', function ()
 					return;
 				});
 		});
+
+		it('should not mount if parameters are only white space', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					return networkDrive.mount(" \t\n\r");
+				})
+				.then(function (result)
+				{
+					throw (new Error("Only white space passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					if (false == err.message.startsWith("Drive path is not valid. drive path"))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				});
+		});
+
+		it('should not mount if password parameters is not undefined or a string', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					return networkDrive.mount(VALID_MOUNT_PATH, undefined, undefined, 0);
+				})
+				.then(function (result)
+				{
+					throw (new Error("Invalid password passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					if (false == err.message.startsWith("Password must be a string or undefined"))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				});
+		});
+
+		it('should not unmount if parameters are only white space', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					return networkDrive.unmount(" \t\n\r");
+				})
+				.then(function (result)
+				{
+					throw (new Error("Only white space passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					if (false == err.message.startsWith("Drive letter is not valid"))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				});
+		});
+
+		it('should not mount if parameters are not strings', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					return networkDrive.mount(0);
+				})
+				.then(function (result)
+				{
+					throw (new Error("None string passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					if (false == err.message.startsWith("Drive path is not valid. drive path"))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				});
+		});
+
+		it('should not mount if driveLetter is invalid', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					return networkDrive.mount(VALID_MOUNT_PATH, 0);
+				})
+				.then(function (result)
+				{
+					throw (new Error("Invalid value passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					if (false == err.message.startsWith("Drive letter must be a string or undefined"))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				});
+		});
+
+		it('should not mount if username is invalid', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					return networkDrive.mount(VALID_MOUNT_PATH, undefined, 0);
+				})
+				.then(function (result)
+				{
+					throw (new Error("Invalid value passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					if (false == err.message.startsWith("Username must be a string or undefined"))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				});
+		});
+
+		it('should not unmount if parameters are only white space', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					return networkDrive.unmount(0);
+				})
+				.then(function (result)
+				{
+					throw (new Error("None string passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					if (false == err.message.startsWith("Drive letter is not valid"))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				});
+		});
+
+		it('mount should not work on a non Windows OS', function ()
+		{
+			var originalPlatform = process.platform;
+
+			return Promise.resolve()
+				.then(function ()
+				{
+					/**
+					 * Fake the OS so this test can fail
+					 * https://stackoverflow.com/a/30405547/6194193
+					 */
+					Object.defineProperty(process, 'platform', {
+						value: 'MockOS'
+					});
+					return networkDrive.mount(VALID_MOUNT_PATH);
+				})
+				.then(function (result)
+				{
+					/**
+					 * The OS will be set back in the catch
+					 */
+					throw (new Error("Non Windows OS passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					/**
+					 * Set the OS back to the original value so the other tests pass
+					 */
+					Object.defineProperty(process, 'platform', {
+						value: originalPlatform
+					});
+
+					if (false == err.message.startsWith("windows-network-drive can only run on windows."))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				})
+		});
+
+		it('unmount should not work on a non Windows OS', function ()
+		{
+			var originalPlatform = process.platform;
+
+			return Promise.resolve()
+				.then(function ()
+				{
+					/**
+					 * Fake the OS so this test can fail
+					 * https://stackoverflow.com/a/30405547/6194193
+					 */
+					Object.defineProperty(process, 'platform', {
+						value: 'MockOS'
+					});
+					return networkDrive.unmount("a");
+				})
+				.then(function (result)
+				{
+					/**
+					 * The OS will be set back in the catch
+					 */
+					throw (new Error("Non Windows OS passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					/**
+					 * Set the OS back to the original value so the other tests pass
+					 */
+					Object.defineProperty(process, 'platform', {
+						value: originalPlatform
+					});
+
+					if (false == err.message.startsWith("windows-network-drive can only run on windows."))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				})
+		});
 	});
 
 	describe('list()', function ()
@@ -114,6 +492,46 @@ describe('windows-network-drive', function ()
 						throw (new Error("Could not get drive list. driveList = " + JSON.stringify(driveList, null, '\t')));
 					}
 				});
+		});
+
+		it('should not work on a non Windows OS', function ()
+		{
+			var originalPlatform = process.platform;
+
+			return Promise.resolve()
+				.then(function ()
+				{
+					/**
+					 * Fake the OS so this test can fail
+					 * https://stackoverflow.com/a/30405547/6194193
+					 */
+					Object.defineProperty(process, 'platform', {
+						value: 'MockOS'
+					});
+					return networkDrive.list();
+				})
+				.then(function (result)
+				{
+					/**
+					 * The OS will be set back in the catch
+					 */
+					throw (new Error("Non Windows OS passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					/**
+					 * Set the OS back to the original value so the other tests pass
+					 */
+					Object.defineProperty(process, 'platform', {
+						value: originalPlatform
+					});
+
+					if (false == err.message.startsWith("windows-network-drive can only run on windows."))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				})
 		});
 	});
 
@@ -162,6 +580,70 @@ describe('windows-network-drive', function ()
 						throw (new Error("Should have found drive letter " + driveLetter + " in " + JSON.stringify(foundDriveLetters)));
 					}
 				});
+		});
+
+		it('should not work with an invalid parameter type', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					return networkDrive.find(0);
+				})
+				.then(function ()
+				{
+					/**
+					 * The OS will be set back in the catch
+					 */
+					throw (new Error("Invalid parameter passed!"));
+				})
+				.catch(function (err)
+				{
+					if (false == err.message.startsWith("Drive path is not valid. drive path"))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				})
+		});
+
+		it('should not work on a non Windows OS', function ()
+		{
+			var originalPlatform = process.platform;
+
+			return Promise.resolve()
+				.then(function ()
+				{
+					/**
+					 * Fake the OS so this test can fail
+					 * https://stackoverflow.com/a/30405547/6194193
+					 */
+					Object.defineProperty(process, 'platform', {
+						value: 'MockOS'
+					});
+					return networkDrive.find();
+				})
+				.then(function (result)
+				{
+					/**
+					 * The OS will be set back in the catch
+					 */
+					throw (new Error("Non Windows OS passed! result = " + result));
+				})
+				.catch(function (err)
+				{
+					/**
+					 * Set the OS back to the original value so the other tests pass
+					 */
+					Object.defineProperty(process, 'platform', {
+						value: originalPlatform
+					});
+
+					if (false == err.message.startsWith("windows-network-drive can only run on windows."))
+					{
+						throw (new Error("Got an unexpected error. err = " + err));
+					}
+					return;
+				})
 		});
 	});
 });
