@@ -3,6 +3,14 @@ const exec = require('child-process-promise').exec;
 const path = require('path');
 const MAX_BUFFER_SIZE = 2000 * 1024;
 
+/* istanbul ignore if */
+function assertNoStdErr({stderr}){
+	if (!("string" === typeof stderr && 0 !== stderr.length))
+		return;
+	
+	throw (new Error(stderr));
+}
+
 let windowsNetworkDrive = {
 	/**
 	 * @function find
@@ -65,8 +73,6 @@ let windowsNetworkDrive = {
 				 */
 				for (let currentDriveLetter in networkDrives)
 				{
-					let currentDrivePath;
-
 					/**
 					 * There is not an easy way to test this
 					 */
@@ -75,7 +81,7 @@ let windowsNetworkDrive = {
 					{
 						continue;
 					}
-					currentDrivePath = networkDrives[currentDriveLetter];
+					const currentDrivePath = networkDrives[currentDriveLetter];
 
 					if (currentDrivePath === drivePath)
 					{
@@ -134,19 +140,11 @@ let windowsNetworkDrive = {
 			})
 			.then(function (result)
 			{
+				assertNoStdErr(result);
+
 				let pathList;
 				let drivePaths = {};
 				let currentPathIndex;
-
-				/**
-				 * Ignore this in code coverage because it should never happen
-				 */
-				/* istanbul ignore if */
-				if ("string" === typeof result.stderr &&
-					0 !== result.stderr.length)
-				{
-					throw (new Error(stderr));
-				}
 
 				/**
 				 * Break based on the line endings (one for each network drive)
@@ -302,19 +300,8 @@ let windowsNetworkDrive = {
 			{
 				return exec(mountCommand, { maxBuffer: MAX_BUFFER_SIZE });
 			})
-			.then(function (result)
-			{
-				/**
-				 * Ignore this in code coverage because it should never happen
-				 */
-				/* istanbul ignore if */
-				if ("string" === typeof result.stderr &&
-					0 !== result.stderr.length)
-				{
-					throw (new Error(stderr));
-				}
-			})
-
+			.then(assertNoStdErr)
+			
 			/**
 			 * Return the drive letter for this mount
 			 */
@@ -375,18 +362,7 @@ let windowsNetworkDrive = {
 					let unmountCommand = "net use " + driveLetter + ": /Delete /y";
 
 					return exec(unmountCommand, { maxBuffer: MAX_BUFFER_SIZE })
-						.then(function (result)
-						{
-							/**
-							 * Ignore this in code coverage because it should never happen
-							 */
-							/* istanbul ignore if */
-							if ("string" === typeof result.stderr &&
-								0 !== result.stderr.length)
-							{
-								throw (new Error(stderr));
-							}
-						});
+						.then(assertNoStdErr);
 				}
 				/**
 				 * Ignore false possitive
