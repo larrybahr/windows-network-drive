@@ -3,6 +3,26 @@ const exec = require('child-process-promise').exec;
 const path = require('path');
 const MAX_BUFFER_SIZE = 2000 * 1024;
 
+/**
+ * @param {string} input - Drive path to search for
+ * @returns {void}
+ * @description Assertion if the value is a non empty string
+ */
+function assertIfNonEmptyString(input)
+{
+	/**
+	 * Ignore this in code coverage because it should never happen
+	 */
+	/* istanbul ignore if */
+	if ("string" === typeof input &&
+		0 !== input.length)
+	{
+		throw (new Error(input));
+	}
+
+	return;
+}
+
 let windowsNetworkDrive = {
 	/**
 	 * @function find
@@ -138,15 +158,7 @@ let windowsNetworkDrive = {
 				let drivePaths = {};
 				let currentPathIndex;
 
-				/**
-				 * Ignore this in code coverage because it should never happen
-				 */
-				/* istanbul ignore if */
-				if ("string" === typeof result.stderr &&
-					0 !== result.stderr.length)
-				{
-					throw (new Error(stderr));
-				}
+				assertIfNonEmptyString(result.stderr);
 
 				/**
 				 * Break based on the line endings (one for each network drive)
@@ -304,15 +316,8 @@ let windowsNetworkDrive = {
 			})
 			.then(function (result)
 			{
-				/**
-				 * Ignore this in code coverage because it should never happen
-				 */
-				/* istanbul ignore if */
-				if ("string" === typeof result.stderr &&
-					0 !== result.stderr.length)
-				{
-					throw (new Error(stderr));
-				}
+				assertIfNonEmptyString(result.stderr);
+				return;
 			})
 
 			/**
@@ -377,15 +382,8 @@ let windowsNetworkDrive = {
 					return exec(unmountCommand, { maxBuffer: MAX_BUFFER_SIZE })
 						.then(function (result)
 						{
-							/**
-							 * Ignore this in code coverage because it should never happen
-							 */
-							/* istanbul ignore if */
-							if ("string" === typeof result.stderr &&
-								0 !== result.stderr.length)
-							{
-								throw (new Error(stderr));
-							}
+							assertIfNonEmptyString(result.stderr);
+							return;
 						});
 				}
 				/**
