@@ -491,6 +491,24 @@ describe('windows-network-drive', function ()
 					{
 						throw (new Error("Could not get drive list. driveList = " + JSON.stringify(driveList, null, '\t')));
 					}
+					return;
+				});
+		});
+
+		it('should get an empty list of network drives on windows', function ()
+		{
+			return Promise.resolve()
+				.then(function ()
+				{
+					return networkDrive.list();
+				})
+				.then(function (driveList)
+				{
+					if ('object' !== typeof driveList || 0 !== Object.keys(driveList).length)
+					{
+						throw (new Error("0 drives should be in the list, but found" + Object.keys(driveList).length + ". driveList = " + JSON.stringify(driveList, null, '\t')));
+					}
+					return;
 				});
 		});
 
@@ -579,6 +597,7 @@ describe('windows-network-drive', function ()
 					{
 						throw (new Error("Should have found drive letter " + driveLetter + " in " + JSON.stringify(foundDriveLetters)));
 					}
+					return;
 				});
 		});
 

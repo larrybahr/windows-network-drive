@@ -158,7 +158,13 @@ let windowsNetworkDrive = {
 				let drivePaths = {};
 				let currentPathIndex;
 
-				assertIfNonEmptyString(result.stderr);
+				/**
+				 * Windows throws an "No Instance(s) Available" error if no network drives are mounted
+				 */
+				if (-1 == result.stderr.indexOf('No Instance(s) Available'))
+				{
+					assertIfNonEmptyString(result.stderr);
+				}
 
 				/**
 				 * Break based on the line endings (one for each network drive)

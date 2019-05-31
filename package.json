@@ -1,6 +1,6 @@
 {
   "name": "windows-network-drive",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "windows network drive stuff",
   "license": "MIT",
   "homepage": "https://github.com/larrybahr/windows-network-drive",
@@ -19,8 +19,8 @@
     }
   ],
   "devDependencies": {
-    "mocha": "^5.1.0",
-    "nyc": "^11.7.1"
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1"
   },
   "dependencies": {
     "child-process-promise": "^2.2.1",
