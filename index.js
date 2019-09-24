@@ -1,5 +1,6 @@
 "use strict";
-const exec = require('child-process-promise').exec;
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 const path = require('path');
 const MAX_BUFFER_SIZE = 2000 * 1024;
 
@@ -282,7 +283,7 @@ let windowsNetworkDrive = {
 			/**
 			 * Get the next drive letter
 			 */
-			.then(driveLetters.randomLetter)
+			.then(driveLetters.randomFree)
 			.then(function (newDriveLetter)
 			{
 				if (undefined === driveLetter)
@@ -375,13 +376,13 @@ let windowsNetworkDrive = {
 			/**
 			 * Get the used drive letter
 			 */
-			.then(driveLetters.usedLetters)
-			.then(function (driveLetters)
+			.then(driveLetters.used)
+			.then(function (letters)
 			{
 				/**
 				 * If this drive is mounted, remove it
 				 */
-				if (-1 !== driveLetters.indexOf(driveLetter))
+				if (-1 !== letters.indexOf(driveLetter))
 				{
 					let unmountCommand = "net use " + driveLetter + ": /Delete /y";
 

@@ -1,6 +1,6 @@
 {
   "name": "windows-network-drive",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "windows network drive stuff",
   "license": "MIT",
   "homepage": "https://github.com/larrybahr/windows-network-drive",
@@ -25,8 +25,7 @@
     "release-it": "^12.2.2"
   },
   "dependencies": {
-    "child-process-promise": "^2.2.1",
-    "windows-drive-letters": "^3.1.0"
+    "windows-drive-letters": "^4.0.0"
   },
   "repository": {
     "type": "git",
@@ -46,6 +45,6 @@
     "release-beta": "nodenv --exec='release-it --dry-run --config=.release-it.js'"
   },
   "engines": {
-    "node": ">=4.2.4"
+    "node": ">=8.16.0"
   }
 }

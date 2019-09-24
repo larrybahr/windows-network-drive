@@ -187,7 +187,7 @@ describe('windows-network-drive', function ()
 				{
 					let driveLetters = require("windows-drive-letters");
 
-					return networkDrive.unmount(driveLetters.randomLetterSync());
+					return networkDrive.unmount(driveLetters.randomFreeSync());
 				});
 		});
 
