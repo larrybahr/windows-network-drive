@@ -20,7 +20,9 @@
   ],
   "devDependencies": {
     "mocha": "^6.1.4",
-    "nyc": "^14.1.1"
+    "node-env-run": "^3.0.2",
+    "nyc": "^14.1.1",
+    "release-it": "^12.2.2"
   },
   "dependencies": {
     "child-process-promise": "^2.2.1",
@@ -40,7 +42,8 @@
   ],
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha"
+    "test": "nyc mocha",
+    "release-beta": "nodenv --exec='release-it --dry-run --config=.release-it.js'"
   },
   "engines": {
     "node": ">=4.2.4"
