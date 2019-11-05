@@ -16,6 +16,10 @@
     {
       "name": "ohager",
       "url": "https://github.com/ohager"
+    },
+    {
+      "name": "mikaello",
+      "url": "https://github.com/mikaello"
     }
   ],
   "devDependencies": {
@@ -40,6 +44,7 @@
     "filesystem"
   ],
   "main": "index.js",
+  "typings": "index.d.ts",
   "scripts": {
     "test": "nyc mocha",
     "release-beta": "nodenv --exec='release-it --dry-run --config=.release-it.js'"
