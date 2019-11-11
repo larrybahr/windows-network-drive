@@ -18,6 +18,7 @@ $ npm install windows-network-drive
 * Get a list of all network drives
 * Find if a path is already mounted and get the drive letter
 * Convert Unix paths to Windows friendly paths
+* TypeScript types included
 
 ## Methods
 
