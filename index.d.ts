@@ -3,7 +3,7 @@ declare module 'windows-network-drive' {
   function find(drivePath: string): Promise<string[]>;
 
   /** List all network drives and their paths. */
-  function list(): Promise<object>;
+  function list(): Promise<{ [driveLetter: string]: string }>;
 
   /** Mounts a network drive path and returns the new drive letter. */
   function mount(
