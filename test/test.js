@@ -491,6 +491,39 @@ describe('windows-network-drive', function ()
 					{
 						throw (new Error("Could not get drive list. driveList = " + JSON.stringify(driveList, null, '\t')));
 					}
+
+
+					const driveLetters = Object.keys(driveList)
+					for (let i = 0; i < driveLetters.length; i++) {
+						/**
+						 * The drive letter should be a string of length 1, ie "Z"
+						 */
+						if ( typeof driveLetters[i] !== 'string' || driveLetters[i].length !== 1 ) {
+							throw (new Error("Drive letter is not a string of length 1. driveList = " + JSON.stringify(driveList, null, '\t')));
+						}
+						/**
+						 * The drive letter should be uppercase
+						 */
+						if ( driveLetters[i] !== driveLetters[i].toUpperCase() ) {
+							throw (new Error("Drive letter is not uppercase. driveList = " + JSON.stringify(driveList, null, '\t')));
+						}
+					}
+
+					const firstResult = driveList[driveLetters[0]];
+					if (!firstResult) {
+						throw (new Error("Bad result data. driveList = " + JSON.stringify(driveList, null, '\t')));
+					}
+
+					if (firstResult.status !== Boolean(firstResult.status)) {
+						throw (new Error("driveList[0].status is not a boolean. driveList = " + JSON.stringify(driveList, null, '\t')));
+					}
+					if (typeof firstResult.path !== 'string') {
+						throw (new Error("driveList[0].path is not a string. driveList = " + JSON.stringify(driveList, null, '\t')));
+					}
+					if (typeof firstResult.statusString !== 'string') {
+						throw (new Error("driveList[0].statusString is not a string. driveList = " + JSON.stringify(driveList, null, '\t')));
+					}
+
 					return;
 				});
 		});
@@ -593,7 +626,7 @@ describe('windows-network-drive', function ()
 						throw (new Error("Could not find mounted path " + VALID_MOUNT_PATH + "."));
 					}
 
-					if (-1 === foundDriveLetters.indexOf(driveLetter))
+					if (-1 === foundDriveLetters.findIndex(d => d.driveLetter === driveLetter))
 					{
 						throw (new Error("Should have found drive letter " + driveLetter + " in " + JSON.stringify(foundDriveLetters)));
 					}

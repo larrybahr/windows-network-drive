@@ -1,9 +1,26 @@
 declare module 'windows-network-drive' {
   /** Finds if a path is already mounted and returns all drive letters that point to that exact path. */
-  function find(drivePath: string): Promise<string[]>;
+  function find(drivePath: string): Promise<{
+    /** Status of the network drive. A falsy value might indicate connectivity issues */
+    status: boolean
+    /** Drive letter */
+    driveLetter: string
+    /** Path to the network drive */
+    path: string
+  }[]>;
 
   /** List all network drives and their paths. */
-  function list(): Promise<{ [driveLetter: string]: string }>;
+  function list(): Promise<{ [driveLetter: string]: {
+    /** Status of the network drive. A falsy value might indicate connectivity issues */
+    status: boolean
+    /** Path to the network drive */
+    path: string
+
+    /**
+     * Status string, describing the status of the network drive.
+     * This is a textual value depending on the local Windows system language. */
+    statusString: string
+  } }>;
 
   /** Mounts a network drive path and returns the new drive letter. */
   function mount(
