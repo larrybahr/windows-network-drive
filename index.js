@@ -141,11 +141,11 @@ let windowsNetworkDrive = {
 	 *    "K": { "ok": true, "path": "\\NETWORKB\DRIVE G", "statusString": "OK" }
 	 * }
 	 */
-	 list: function list()
-	 {
-		 let listPromise;
+	list: function list()
+	{
+		let listPromise;
 
-		 listPromise = Promise.resolve()
+		listPromise = Promise.resolve()
 			.then(function ()
 			{
 				if (false === windowsNetworkDrive.isWinOs())
@@ -181,22 +181,26 @@ let windowsNetworkDrive = {
 
 
 				// Fix an issue where the table rows are split in multiple lines, because of a long path:
-				for (let i = 0; i< lines.length; i++) {
-					if (lines[i][0] === ' ') {
+				for (let i = 0; i < lines.length; i++)
+				{
+					if (lines[i][0] === ' ')
+					{
 						// The line is a line-break of the previous line.
 						// Merge with previous:
 						const toMergeLine = lines.splice(i, 1)[0];
-						lines[i-1] += ' ' + toMergeLine.trim();
+						lines[i - 1] += ' ' + toMergeLine.trim();
 						i--;
 					}
 				}
 
 				const drivePaths = {}
-				for (let i = 0; i< lines.length; i++) {
+				for (let i = 0; i < lines.length; i++)
+				{
 					const line = lines[i];
 
 					const m = line.match(/^(.+) +(\w): +([^ ]+) +(.+)$/);
-					if (m) {
+					if (m)
+					{
 						/**
 						 * Examples of statusString:
 						 * "OK" | "Disconnected" | "Not Avail"
@@ -217,9 +221,9 @@ let windowsNetworkDrive = {
 				}
 				return drivePaths
 
-			 })
-		 return listPromise;
-	 },
+			})
+		return listPromise;
+	},
 
 	/**
 	 * @function mount

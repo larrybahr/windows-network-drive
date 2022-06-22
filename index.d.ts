@@ -10,17 +10,19 @@ declare module 'windows-network-drive' {
   }[]>;
 
   /** List all network drives and their paths. */
-  function list(): Promise<{ [driveLetter: string]: {
-    /** Status of the network drive. A falsy value might indicate connectivity issues */
-    status: boolean
-    /** Path to the network drive */
-    path: string
+  function list(): Promise<{
+    [driveLetter: string]: {
+      /** Status of the network drive. A falsy value might indicate connectivity issues */
+      status: boolean
+      /** Path to the network drive */
+      path: string
 
-    /**
-     * Status string, describing the status of the network drive.
-     * This is a textual value depending on the local Windows system language. */
-    statusString: string
-  } }>;
+      /**
+       * Status string, describing the status of the network drive.
+       * This is a textual value depending on the local Windows system language. */
+      statusString: string
+    }
+  }>;
 
   /** Mounts a network drive path and returns the new drive letter. */
   function mount(
