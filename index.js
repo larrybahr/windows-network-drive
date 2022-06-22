@@ -29,7 +29,7 @@ let windowsNetworkDrive = {
 	 * @function find
 	 * @public
 	 * @param {string} drivePath - Drive path to search for
-	 * @returns {Promise<string[]>} - An array of drive letters that point to the drive path
+	 * @returns {Promise<{status: boolean, driveLetter: string, path: string, statusMessage: string}[]>} - An array of results
 	 * @description Gets the network drive letter for a path
 	 * @example
 	 * networkDrive.find("\\DoesExist\Path")
@@ -79,7 +79,7 @@ let windowsNetworkDrive = {
 			.then(windowsNetworkDrive.list)
 			.then(function (networkDrives)
 			{
-				let driveLetters = [];
+				const filteredDrives = [];
 
 				/**
 				 * Create the list of drives to path
@@ -99,15 +99,10 @@ let windowsNetworkDrive = {
 
 					if (currentDrive.path === drivePath)
 					{
-						driveLetters.push({
-
-							status: currentDrive.status,
-							driveLetter: currentDriveLetter,
-							path: currentDrive.path
-						});
+						filteredDrives.push(currentDrive);
 					}
 				}
-				return driveLetters;
+				return filteredDrives;
 			})
 		return findPromise;
 	},
@@ -131,14 +126,14 @@ let windowsNetworkDrive = {
 	/**
 	 * @function list
 	 * @public
-	 * @returns {Promise<Object>} - Object keys are drive letters, values are { ok: boolean, path: string }
+	 * @returns {Promise<{ status: boolean, driveLetter: string, path: string, statusMessage: string }>} - Object keys are drive letters
 	 * @description lists all network drives and paths
 	 * @example
 	 * networkDrive.list()
 	 * // returns
 	 * {
-	 *    "F": { "ok": true, "path": "\\NETWORKA\Files", "statusString": "OK" },
-	 *    "K": { "ok": true, "path": "\\NETWORKB\DRIVE G", "statusString": "OK" }
+	 *    "F": { "ok": true, "path": "\\NETWORKA\Files", "statusMessage": "OK" },
+	 *    "K": { "ok": true, "path": "\\NETWORKB\DRIVE G", "statusMessage": "OK" }
 	 * }
 	 */
 	list: function list()
@@ -202,19 +197,20 @@ let windowsNetworkDrive = {
 					if (m)
 					{
 						/**
-						 * Examples of statusString:
+						 * Examples of statusMessage:
 						 * "OK" | "Disconnected" | "Not Avail"
-						 * Note: the statusString might contain other status, as it depends on the Windows system language.
+						 * Note: the statusMessage might contain other status, as it depends on the Windows system language.
 						 */
-						const statusString = m[1].trim();
+						const statusMessage = m[1].trim();
 						const driveLetter = m[2].trim().toUpperCase();
 						const path = m[3].trim();
 						// const network = m[4].trim();
 
 						drivePaths[driveLetter] = {
-							status: statusString === 'OK',
-							statusString: statusString,
+							status: statusMessage === 'OK',
+							driveLetter: driveLetter,
 							path: path,
+							statusMessage: statusMessage,
 						};
 
 					}

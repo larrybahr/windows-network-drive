@@ -526,9 +526,9 @@ describe('windows-network-drive', function ()
 					{
 						throw (new Error("driveList[0].path is not a string. driveList = " + JSON.stringify(driveList, null, '\t')));
 					}
-					if (typeof firstResult.statusString !== 'string')
+					if (typeof firstResult.statusMessage !== 'string')
 					{
-						throw (new Error("driveList[0].statusString is not a string. driveList = " + JSON.stringify(driveList, null, '\t')));
+						throw (new Error("driveList[0].statusMessage is not a string. driveList = " + JSON.stringify(driveList, null, '\t')));
 					}
 
 					return;
