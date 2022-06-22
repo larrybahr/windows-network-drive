@@ -166,7 +166,10 @@ $ npm test
 
 ## Contributing
 
-In lieu of a formal style guide, take care to maintain the existing coding style. Format code with VS Code. Add unit tests for any new or changed functionality. Lint and test your code.
+In lieu of a formal style guide, take care to maintain the existing coding style.
+* Format code with VS Code, using the default "Typescript and JavaScript Language Features" formatter.
+* Add unit tests for any new or changed functionality.
+* Lint and test your code.
 
 ## People
 
