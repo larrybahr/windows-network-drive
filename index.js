@@ -168,7 +168,7 @@ let windowsNetworkDrive = {
 				const lines = `${result.stdout}`
 					.replace(/^(-+)$/gm, '') // remove the "-----------------------------"-line
 					.split('\n')
-					.map((l) => l.replace(/[\r\n]/g, '')) // Trim line endings
+					.map((line) => line.trim()) // Trim line endings
 					.filter(Boolean) // Remove empty lines
 					.slice(1) // Remove the first line ("New connections...")
 					.slice(1) // Remove the table header line ("Status   Local...")
