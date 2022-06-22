@@ -494,31 +494,31 @@ describe('windows-network-drive', function ()
 
 
 					const driveLetters = Object.keys(driveList)
-					for (let i = 0; i < driveLetters.length; i++)
+					for (let driveLetterIndex = 0; driveLetterIndex < driveLetters.length; driveLetterIndex++)
 					{
 						/**
 						 * The drive letter should be a string of length 1, ie "Z"
 						 */
-						if (typeof driveLetters[i] !== 'string' || driveLetters[i].length !== 1)
+						if (typeof driveLetters[driveLetterIndex] !== 'string' || driveLetters[driveLetterIndex].length !== 1)
 						{
 							throw (new Error("Drive letter is not a string of length 1. driveList = " + JSON.stringify(driveList, null, '\t')));
 						}
 						/**
 						 * The drive letter should be uppercase
 						 */
-						if (driveLetters[i] !== driveLetters[i].toUpperCase())
+						if (driveLetters[driveLetterIndex] !== driveLetters[driveLetterIndex].toUpperCase())
 						{
 							throw (new Error("Drive letter is not uppercase. driveList = " + JSON.stringify(driveList, null, '\t')));
 						}
 					}
 
 					const firstResult = driveList[driveLetters[0]];
-					if (!firstResult)
+					if ('object' !== typeof firstResult)
 					{
 						throw (new Error("Bad result data. driveList = " + JSON.stringify(driveList, null, '\t')));
 					}
 
-					if (firstResult.status !== Boolean(firstResult.status))
+					if (typeof firstResult.status !== 'boolean')
 					{
 						throw (new Error("driveList[0].status is not a boolean. driveList = " + JSON.stringify(driveList, null, '\t')));
 					}

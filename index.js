@@ -176,34 +176,34 @@ let windowsNetworkDrive = {
 
 
 				// Fix an issue where the table rows are split in multiple lines, because of a long path:
-				for (let i = 0; i < lines.length; i++)
+				for (let lineIndex = 0; lineIndex < lines.length; lineIndex++)
 				{
-					if (lines[i][0] === ' ')
+					if (lines[lineIndex][0] === ' ')
 					{
 						// The line is a line-break of the previous line.
 						// Merge with previous:
-						const toMergeLine = lines.splice(i, 1)[0];
-						lines[i - 1] += ' ' + toMergeLine.trim();
-						i--;
+						const toMergeLine = lines.splice(lineIndex, 1)[0];
+						lines[lineIndex - 1] += ' ' + toMergeLine.trim();
+						lineIndex--;
 					}
 				}
 
 				const drivePaths = {}
-				for (let i = 0; i < lines.length; i++)
+				for (let lineIndex = 0; lineIndex < lines.length; lineIndex++)
 				{
-					const line = lines[i];
+					const line = lines[lineIndex];
 
-					const m = line.match(/^(.+) +(\w): +([^ ]+) +(.+)$/);
-					if (m)
+					const lineMatch = line.match(/^(.+) +(\w): +([^ ]+) +(.+)$/);
+					if (lineMatch)
 					{
 						/**
 						 * Examples of statusMessage:
 						 * "OK" | "Disconnected" | "Not Avail"
 						 * Note: the statusMessage might contain other status, as it depends on the Windows system language.
 						 */
-						const statusMessage = m[1].trim();
-						const driveLetter = m[2].trim().toUpperCase();
-						const path = m[3].trim();
+						const statusMessage = lineMatch[1].trim();
+						const driveLetter = lineMatch[2].trim().toUpperCase();
+						const path = lineMatch[3].trim();
 						// const network = m[4].trim();
 
 						drivePaths[driveLetter] = {
