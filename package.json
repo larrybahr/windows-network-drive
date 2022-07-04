@@ -28,7 +28,6 @@
   ],
   "devDependencies": {
     "mocha": "^6.2.2",
-    "node-env-run": "^3.0.2",
     "nyc": "^14.1.1"
   },
   "dependencies": {
