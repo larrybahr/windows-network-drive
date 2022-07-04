@@ -2,9 +2,7 @@
 
 Allows a user to do network drive stuff on Microsoft Windows from node js
 
-### Version 3 update notes
-
-3.0.0 is a maintenance update. There are no API differences between 2.1.2 and 3.0.0. The breaking change is the new minimum version of NodeJS (raised from 4.2.4 to 8.16.0). Dependencies have been removed or updated as well.
+[See release notes for breaking changes and migration info](https://github.com/larrybahr/windows-network-drive/releases)
 
 ## Installation
 
