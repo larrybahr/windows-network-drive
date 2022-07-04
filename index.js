@@ -29,12 +29,12 @@ let windowsNetworkDrive = {
 	 * @function find
 	 * @public
 	 * @param {string} drivePath - Drive path to search for
-	 * @returns {Promise<string[]>} - An array of drive letters that point to the drive path
+	 * @returns {Promise<{status: boolean, driveLetter: string, path: string, statusMessage: string}[]>} - An array of results
 	 * @description Gets the network drive letter for a path
 	 * @example
-	 * networkDrive.find("\\DoesExist\Path")
+	 * networkDrive.find("\\\\DoesExist\\Path")
 	 * // returns
-	 * ["T"]
+	 * [{status: true, driveLetter: "Z", path: "\\\\DoesExist\\Path", statusMessage: "OK"}]
 	 * @example
 	 * networkDrive.find("\\DoesNOTExist\Path")
 	 * // returns
@@ -79,14 +79,13 @@ let windowsNetworkDrive = {
 			.then(windowsNetworkDrive.list)
 			.then(function (networkDrives)
 			{
-				let driveLetters = [];
+				const filteredDrives = [];
 
 				/**
 				 * Create the list of drives to path
 				 */
 				for (let currentDriveLetter in networkDrives)
 				{
-					let currentDrivePath;
 
 					/**
 					 * There is not an easy way to test this
@@ -96,14 +95,14 @@ let windowsNetworkDrive = {
 					{
 						continue;
 					}
-					currentDrivePath = networkDrives[currentDriveLetter];
+					const currentDrive = networkDrives[currentDriveLetter];
 
-					if (currentDrivePath === drivePath)
+					if (currentDrive.path === drivePath)
 					{
-						driveLetters.push(currentDriveLetter.toUpperCase());
+						filteredDrives.push(currentDrive);
 					}
 				}
-				return driveLetters;
+				return filteredDrives;
 			})
 		return findPromise;
 	},
@@ -127,14 +126,14 @@ let windowsNetworkDrive = {
 	/**
 	 * @function list
 	 * @public
-	 * @returns {Promise<Object>} - Object keys are drive letters, values are the network path
+	 * @returns {Promise<{ status: boolean, driveLetter: string, path: string, statusMessage: string }>} - Object keys are drive letters
 	 * @description lists all network drives and paths
 	 * @example
 	 * networkDrive.list()
 	 * // returns
 	 * {
-	 *    "F":"\\NETWORKA\Files",
-	 *    "K":"\\NETWORKB\DRIVE G"
+	 *    "F": { "status": true, "driveLetter": "F", "path": "\\\\NETWORKA\\Files", "statusMessage": "OK" },
+	 *    "K": { "status": true, "driveLetter": "K", "path": "\\\\NETWORKB\\DRIVE G", "statusMessage": "OK" }
 	 * }
 	 */
 	list: function list()
@@ -151,47 +150,73 @@ let windowsNetworkDrive = {
 			})
 			.then(function ()
 			{
-				return exec("wmic path Win32_LogicalDisk Where DriveType=\"4\" get DeviceID, ProviderName", { maxBuffer: MAX_BUFFER_SIZE });
+				return exec("net use", { maxBuffer: MAX_BUFFER_SIZE });
 			})
 			.then(function (result)
 			{
-				let pathList;
-				let drivePaths = {};
-				let currentPathIndex;
+				// "net use" returns:
+				// New connections will be remembered.
+				//
+				//
+				// Status       Local     Remote                    Network
+				//
+				// -------------------------------------------------------------------------------
+				// OK           Z:        \\NETWORKA\Files         Microsoft Windows Network
+				// The command completed successfully.
 
-				/**
-				 * Windows throws an "No Instance(s) Available" error if no network drives are mounted
-				 */
-				if (-1 == result.stderr.indexOf('No Instance(s) Available'))
+
+				const lines = `${result.stdout}`
+					.replace(/^(-+)$/gm, '') // remove the "-----------------------------"-line
+					.split('\n')
+					.map((line) => line.trim()) // Trim line endings
+					.filter(Boolean) // Remove empty lines
+					.slice(1) // Remove the first line ("New connections...")
+					.slice(1) // Remove the table header line ("Status   Local...")
+					.slice(0, -1); // Remove the last line ("The command completed..."), so that only the table remains
+
+
+				// Fix an issue where the table rows are split in multiple lines, because of a long path:
+				for (let lineIndex = 0; lineIndex < lines.length; lineIndex++)
 				{
-					assertIfNonEmptyString(result.stderr);
-				}
-
-				/**
-				 * Break based on the line endings (one for each network drive)
-				 * and remove the header row
-				 */
-				pathList = result.stdout.split(/\s*[\n\r]+/g);
-				pathList.splice(0, 1);
-
-				/**
-				 * Create the list of drives to path
-				 */
-				for (currentPathIndex = 0; currentPathIndex < pathList.length; currentPathIndex++)
-				{
-					let currentPath = pathList[currentPathIndex];
-
-					if ("string" === typeof currentPath &&
-						0 < currentPath.length)
+					if (lines[lineIndex][0] === ' ')
 					{
-						let colonIndex = currentPath.indexOf(':');
-						let driveLetter = currentPath.substring(0, colonIndex);
-						let drivePath = currentPath.substring(colonIndex + 1);
-
-						drivePaths[driveLetter.trim().toUpperCase()] = drivePath.trim();
+						// The line is a line-break of the previous line.
+						// Merge with previous:
+						const toMergeLine = lines.splice(lineIndex, 1)[0];
+						lines[lineIndex - 1] += ' ' + toMergeLine.trim();
+						lineIndex--;
 					}
 				}
-				return drivePaths;
+
+				const drivePaths = {}
+				for (let lineIndex = 0; lineIndex < lines.length; lineIndex++)
+				{
+					const line = lines[lineIndex];
+
+					const lineMatch = line.match(/^(.+) +(\w): +([^ ]+) +(.+)$/);
+					if (lineMatch)
+					{
+						/**
+						 * Examples of statusMessage:
+						 * "OK" | "Disconnected" | "Not Avail"
+						 * Note: the statusMessage might contain other status, as it depends on the Windows system language.
+						 */
+						const statusMessage = lineMatch[1].trim();
+						const driveLetter = lineMatch[2].trim().toUpperCase();
+						const path = lineMatch[3].trim();
+						// const network = m[4].trim();
+
+						drivePaths[driveLetter] = {
+							status: statusMessage === 'OK',
+							driveLetter: driveLetter,
+							path: path,
+							statusMessage: statusMessage,
+						};
+
+					}
+				}
+				return drivePaths
+
 			})
 		return listPromise;
 	},

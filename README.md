@@ -31,16 +31,16 @@ let networkDrive = require('windows-network-drive');
 ### find
 Finds if a path is already mounted and returns all drive letters that point to that exact path.
 ```typescript
-find(drivePath: string): Promise<string[]>
+find(drivePath: string): Promise<{status: boolean, driveLetter: string, path: string, statusMessage: string}[]>
 ```
 
 #### Examples
 
 ```javascript
  networkDrive.find("\\\\DoesExist\\Path")
- .then(function (driveLetter)
+ .then(function (result)
  {
-	 // driveLetter === ["Z"]
+	 // result === [{status: true, driveLetter: "Z", path: "\\\\DoesExist\\Path", "statusMessage": "OK"}]
  });
 
   networkDrive.find("\\\\DoesExist\\Path\\ThisFolderIsNotPartOfTheMountPath")
@@ -71,8 +71,8 @@ list(void): Promise<object>
  {
 	 /*
 		drives = {
-			"F":"\\\\DoesExist\\Path\\Files",
-			"K":"\\\\NETWORKB\\DRIVE C"
+			"F": { "status": true, "driveLetter": "F", "path": "\\\\NETWORKA\\Files", "statusMessage": "OK" },
+			"K": { "status": true, "driveLetter": "K", "path": "\\\\NETWORKB\\Files", "statusMessage": "OK" }
 		}
 	*/
  });
@@ -128,7 +128,7 @@ pathToWindowsPath(drivePath: string): Promise<string>
 #### Examples
 
 ```javascript
- networkDrive.pathToWindowsPath(//DoesExist/Path/Files)
+ networkDrive.pathToWindowsPath("//DoesExist/Path/Files")
  .then(function (windowsPath)
  {
 	 // windowsPath = \\\\DoesExist\\Path\\Files
@@ -166,7 +166,10 @@ $ npm test
 
 ## Contributing
 
-In lieu of a formal style guide, take care to maintain the existing coding style. Format code with VS Code. Add unit tests for any new or changed functionality. Lint and test your code.
+In lieu of a formal style guide, take care to maintain the existing coding style.
+* Format code with VS Code, using the default "Typescript and JavaScript Language Features" formatter.
+* Add unit tests for any new or changed functionality.
+* Lint and test your code.
 
 ## People
 

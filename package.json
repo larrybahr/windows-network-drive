@@ -20,6 +20,10 @@
     {
       "name": "mikaello",
       "url": "https://github.com/mikaello"
+    },
+    {
+      "name": "Johan Nyman",
+      "url": "https://github.com/nytamin"
     }
   ],
   "devDependencies": {
