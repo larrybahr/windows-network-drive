@@ -32,9 +32,9 @@ let windowsNetworkDrive = {
 	 * @returns {Promise<{status: boolean, driveLetter: string, path: string, statusMessage: string}[]>} - An array of results
 	 * @description Gets the network drive letter for a path
 	 * @example
-	 * networkDrive.find("\\DoesExist\Path")
+	 * networkDrive.find("\\\\DoesExist\\Path")
 	 * // returns
-	 * ["T"]
+	 * [{status: true, driveLetter: "Z", path: "\\\\DoesExist\\Path", statusMessage: "OK"}]
 	 * @example
 	 * networkDrive.find("\\DoesNOTExist\Path")
 	 * // returns
@@ -132,8 +132,8 @@ let windowsNetworkDrive = {
 	 * networkDrive.list()
 	 * // returns
 	 * {
-	 *    "F": { "ok": true, "path": "\\NETWORKA\Files", "statusMessage": "OK" },
-	 *    "K": { "ok": true, "path": "\\NETWORKB\DRIVE G", "statusMessage": "OK" }
+	 *    "F": { "status": true, "driveLetter": "F", "path": "\\\\NETWORKA\\Files", "statusMessage": "OK" },
+	 *    "K": { "status": true, "driveLetter": "K", "path": "\\\\NETWORKB\\DRIVE G", "statusMessage": "OK" }
 	 * }
 	 */
 	list: function list()
