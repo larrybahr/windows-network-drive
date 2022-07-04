@@ -20,8 +20,8 @@ Promise.resolve()
 	{
 		if (0 < driveLetters.length)
 		{
-			console.log("The drive is already mounted. Returning the first drive (" + driveLetters[0] + ") letter because they all point to the same place.");
-			return driveLetters[0];
+			console.log("The drive is already mounted. Returning the first drive (" + driveLetters[0].driveLetter + ") letter because they all point to the same place.");
+			return driveLetters[0].driveLetter;
 		}
 		else
 		{
