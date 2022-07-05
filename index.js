@@ -161,6 +161,8 @@ let windowsNetworkDrive = {
 				// Status       Local     Remote                    Network
 				//
 				// -------------------------------------------------------------------------------
+				// OK           Y:        \\NETWORKA\long-long-long-long-long-name
+				//                                                 Microsoft Windows Network
 				// OK           Z:        \\NETWORKA\Files         Microsoft Windows Network
 				// The command completed successfully.
 
@@ -168,7 +170,7 @@ let windowsNetworkDrive = {
 				const lines = `${result.stdout}`
 					.replace(/^(-+)$/gm, '') // remove the "-----------------------------"-line
 					.split('\n')
-					.map((line) => line.trim()) // Trim line endings
+					.map((line) => line.replace(/[\r\n]/g, '')) // Trim line endings, but not spaces
 					.filter(Boolean) // Remove empty lines
 					.slice(1) // Remove the first line ("New connections...")
 					.slice(1) // Remove the table header line ("Status   Local...")
